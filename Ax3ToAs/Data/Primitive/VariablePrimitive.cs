@@ -33,13 +33,13 @@ namespace KttK.HspDecompiler.Ax3ToAs.Data.Primitive
 			bld.Append(Value.ToString());
 			return bld.ToString();
 		}
-		//public static string ToString(int value)
-		//{
-  //          StringBuilder bld = new StringBuilder("var");
-		//	bld.Append("_");
-		//	bld.Append(value.ToString());
-		//	return bld.ToString();
-		//}
+		public static string ToString(int value)
+		{
+            StringBuilder bld = new StringBuilder("var");
+			bld.Append("_");
+			bld.Append(value.ToString());
+			return bld.ToString();
+		}
 	}
 
 	internal sealed class ParameterPrimitive : VariablePrimitive

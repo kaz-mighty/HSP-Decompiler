@@ -99,10 +99,10 @@ namespace KttK.HspDecompiler
 
 				}
 			}
-			byte[] buffer = null;
 			FileStream saveStream = null;
 			foreach (DpmFileState file in undpm.FileList)
 			{
+				List<byte[]> bufferList = new List<byte[]>();
 				if (file.IsEncrypted)
 				{
 #if AllowDecryption
@@ -124,32 +124,48 @@ namespace KttK.HspDecompiler
 					global::KttK.HspDecompiler.HspConsole.Write(file.FileName + "ÇÃäJénà íuÇ…à⁄ìÆÇ≈Ç´Ç‹ÇπÇÒÇ≈ÇµÇΩ");
 					continue;
 				}
-				buffer = reader.ReadBytes(file.FileSize);
+				byte[] buffer = reader.ReadBytes(file.FileSize);
 #if AllowDecryption
 				if (file.IsEncrypted)
 				{
 					global::KttK.HspDecompiler.HspConsole.Write(file.FileName + "ÇÃïúçÜíÜ...");
 
-					KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform decrypter = KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform.CrackEncryption(buffer);
-					if (decrypter == null){
+					List<KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform> decrypterList = KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform.CrackEncryption(buffer);
+					if (decrypterList.Count == 0) {
 						global::KttK.HspDecompiler.HspConsole.Write(file.FileName + "ÇÃïúçÜÇ…é∏îsÇµÇ‹ÇµÇΩ");
-						
+
 						continue;
 					}
-					buffer = decrypter.Decryption(buffer);
-				}
+					foreach (KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform decrypter in decrypterList)
+					{
+						bufferList.Add(decrypter.Decryption(buffer));
+					}
+				} else
 #endif
-				try{
-					saveStream = new FileStream(outputPath, FileMode.CreateNew, FileAccess.Write);
-					saveStream.Write(buffer,0,buffer.Length);
-				}
-				catch
 				{
-					global::KttK.HspDecompiler.HspConsole.Warning(file.FileName + "ÇÃï€ë∂Ç…é∏îsÇµÇ‹ÇµÇΩ");
+					bufferList.Add(buffer);
 				}
-				finally{
-					if(saveStream != null)
-						saveStream.Close();
+				int i = 0;
+				foreach (byte[] buf in bufferList)
+				{
+					string suffix = "";
+					if (i > 0)
+					{
+						suffix = "(" + i.ToString() + ")";
+					}
+					try {
+						saveStream = new FileStream(outputPath + suffix, FileMode.CreateNew, FileAccess.Write);
+						saveStream.Write(buf, 0, buf.Length);
+					}
+					catch
+					{
+						global::KttK.HspDecompiler.HspConsole.Warning(file.FileName + "ÇÃï€ë∂Ç…é∏îsÇµÇ‹ÇµÇΩ");
+					}
+					finally {
+						if (saveStream != null)
+							saveStream.Close();
+					}
+					i++;
 				}
 					
 			}

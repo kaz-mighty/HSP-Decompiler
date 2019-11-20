@@ -48,27 +48,27 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 			return plain;
 		}
 
-		internal static HspCryptoTransform CrackEncryption(byte[] encrypted)
+		internal static List<HspCryptoTransform> CrackEncryption(byte[] encrypted)
 		{
 			byte[] plain3 = new byte[4];
 			plain3[0] = 0x48;//H
 			plain3[1] = 0x53;//S
 			plain3[2] = 0x50;//P
 			plain3[3] = 0x33;//3
-			HspCryptoTransform hsp3crypto = CrackEncryption(plain3, encrypted);
-			if (hsp3crypto != null)
+			List<HspCryptoTransform> hsp3crypto = CrackEncryption(plain3, encrypted);
+			if (hsp3crypto.Count != 0)
 				return hsp3crypto;
 			byte[] plain2 = new byte[4];
 			plain2[0] = 0x48;//H
 			plain2[1] = 0x53;//S
 			plain2[2] = 0x50;//P
 			plain2[3] = 0x32;//2
-			HspCryptoTransform hsp2crypto = CrackEncryption(plain2, encrypted);
+			List<HspCryptoTransform> hsp2crypto = CrackEncryption(plain2, encrypted);
 			return hsp2crypto;
 
 		}
 
-		internal static HspCryptoTransform CrackEncryption(byte[] plain, byte[] encrypted)
+		internal static List<HspCryptoTransform> CrackEncryption(byte[] plain, byte[] encrypted)
 		{
 			int count = Math.Min(plain.Length, encrypted.Length);
 			if (count < 2)
@@ -114,16 +114,14 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 					transformList.Add(xoradd);
 				}
 			}
-			//候補が2つ以上ならアルゴリズムに問題アリ。
-			if (transformList.Count > 1)
-				throw new Exception("復号器の異常");
-			if (transformList.Count == 1)
+			List<HspCryptoTransform> ret = new List<HspCryptoTransform>();
+			foreach (XorAddTransform xoradd in transformList)
 			{
-				HspCryptoTransform ret = new HspCryptoTransform();
-				ret.xorAdd = transformList[0];
-				return ret;
+				HspCryptoTransform t = new HspCryptoTransform();
+				t.xorAdd = xoradd;
+				ret.Add(t);
 			}
-			return null;
+			return ret;
 
 		}
 
