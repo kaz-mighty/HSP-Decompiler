@@ -112,6 +112,7 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 					}
 				}
 				if(ok) {
+					global::KttK.HspDecompiler.HspConsole.Write(xoradd.ToString());
 					AbstractAxDecoder decoder = null;
 
 					if(plain[3] == 0x32) {

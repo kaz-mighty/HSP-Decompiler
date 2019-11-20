@@ -14,7 +14,7 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 		internal bool XorSum;//XORを先に適用するタイプ。旧式。
 		public override string ToString()
 		{
-			return "xor:0x" + XorByte.ToString("X02") + "    " + "add:0x" + AddByte.ToString("X02");
+			return "xor:0x" + XorByte.ToString("X02") + "    " + "add:0x" + AddByte.ToString("X02") + "    " + "Farst xor:" + XorSum.ToString();
 		}
 
 		internal byte Encode(byte b)
