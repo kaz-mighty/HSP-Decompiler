@@ -157,7 +157,7 @@ namespace KttK.HspDecompiler.Ax3ToAs.Data
 					//if (strIndex == -1)
 					if (functionIndex == -7)
 						return FunctionType.comfunc;
-					if (labelIndex == 2)
+					if (labelIndex == 2 || labelIndex == 6)
 						return FunctionType.func;
 					if (labelIndex == 3)///func onexit
 						return FunctionType.func;
