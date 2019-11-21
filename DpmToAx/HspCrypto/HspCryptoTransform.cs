@@ -148,14 +148,12 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 					{
 						decoder.Decode(reader, outputPath);
 						transformList.Add(xoradd);
+						break;
 					} catch(Exception e) {
 						Console.WriteLine(e);
 					}
 				}
 			}
-			//候補が2つ以上ならアルゴリズムに問題アリ。
-			if (transformList.Count > 1)
-				throw new Exception("復号器の異常");
 			if (transformList.Count == 1)
 			{
 				HspCryptoTransform ret = new HspCryptoTransform();
