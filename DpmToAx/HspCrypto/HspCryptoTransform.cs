@@ -51,14 +51,14 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 			return plain;
 		}
 
-		internal static HspCryptoTransform CrackEncryption(byte[] encrypted, Hsp3Dictionary dictionary)
+		internal static HspCryptoTransform CrackEncryption(byte[] encrypted, Hsp3Dictionary dictionary, string filePath)
 		{
 			byte[] plain3 = new byte[4];
 			plain3[0] = 0x48;//H
 			plain3[1] = 0x53;//S
 			plain3[2] = 0x50;//P
 			plain3[3] = 0x33;//3
-			HspCryptoTransform hsp3crypto = CrackEncryption(plain3, encrypted, dictionary);
+			HspCryptoTransform hsp3crypto = CrackEncryption(plain3, encrypted, dictionary, filePath);
 			if (hsp3crypto != null)
 				return hsp3crypto;
 			byte[] plain2 = new byte[4];
@@ -66,12 +66,12 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 			plain2[1] = 0x53;//S
 			plain2[2] = 0x50;//P
 			plain2[3] = 0x32;//2
-			HspCryptoTransform hsp2crypto = CrackEncryption(plain2, encrypted, dictionary);
+			HspCryptoTransform hsp2crypto = CrackEncryption(plain2, encrypted, dictionary, filePath);
 			return hsp2crypto;
 
 		}
 
-		internal static HspCryptoTransform CrackEncryption(byte[] plain, byte[] encrypted, Hsp3Dictionary dictionary)
+		internal static HspCryptoTransform CrackEncryption(byte[] plain, byte[] encrypted, Hsp3Dictionary dictionary, string filePath)
 		{
 			int count = Math.Min(plain.Length, encrypted.Length);
 			if (count < 2)
@@ -113,15 +113,6 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 				}
 				if(ok) {
 					global::KttK.HspDecompiler.HspConsole.Write(xoradd.ToString());
-					AbstractAxDecoder decoder = null;
-
-					if(plain[3] == 0x32) {
-						decoder = new Ax2Decoder();
-					} else {
-						Ax3Decoder decoder3 = new Ax3Decoder();
-						decoder3.Dictionary = dictionary;
-						decoder = decoder3;
-					}
 
 					HspCryptoTransform decryptor = new HspCryptoTransform();
 					decryptor.xorAdd = xoradd;
@@ -130,9 +121,32 @@ namespace KttK.HspDecompiler.DpmToAx.HspCrypto
 
 					MemoryStream stream = new MemoryStream(buffer);
 					BinaryReader reader = new BinaryReader(stream, Encoding.GetEncoding("SHIFT-JIS"));
+					HspDecoder decoder = new HspDecoder();
 
-					try {
-						decoder.Decode(reader);
+					/* ƒtƒ@ƒCƒ‹–¼‚ÌŒˆ’è */
+					string outputFileExtention = null;
+					if (plain[3] == 0x32)
+					{
+						outputFileExtention = ".as";
+					}
+					else
+					{
+						outputFileExtention = ".hsp";
+					}
+					string dirName = Path.GetDirectoryName(filePath) + @"\";
+					string outputFileName = Path.GetFileNameWithoutExtension(filePath);
+					string outputPath = dirName + outputFileName + outputFileExtention;
+					int suffix = 1;
+					while (File.Exists(outputPath))
+					{
+						outputFileName = string.Format("{0} ({1})", outputFileName, suffix);
+						outputPath = dirName + outputFileName + outputFileExtention;
+						suffix++;
+					}
+
+					try
+					{
+						decoder.Decode(reader, outputPath);
 						transformList.Add(xoradd);
 					} catch(Exception e) {
 						Console.WriteLine(e);

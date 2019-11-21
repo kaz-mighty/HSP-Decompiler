@@ -130,7 +130,7 @@ namespace KttK.HspDecompiler
 				{
 					global::KttK.HspDecompiler.HspConsole.Write(file.FileName + "ÇÃïúçÜíÜ...");
 
-					KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform decrypter = KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform.CrackEncryption(buffer, dictionary); // ïœçX
+					KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform decrypter = KttK.HspDecompiler.DpmToAx.HspCrypto.HspCryptoTransform.CrackEncryption(buffer, dictionary, outputPath); // ïœçX
 					if (decrypter == null){
 						global::KttK.HspDecompiler.HspConsole.Write(file.FileName + "ÇÃïúçÜÇ…é∏îsÇµÇ‹ÇµÇΩ");
 						
